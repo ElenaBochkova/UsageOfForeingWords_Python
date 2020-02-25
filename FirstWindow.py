@@ -2,6 +2,7 @@ from DatabaseControl import *
 import play_the_word
 from tkinter import *
 from tkinter.ttk import Combobox
+from tkinter import messagebox as mb
 import webbrowser
 import InputWindow
 import datetime
@@ -31,6 +32,7 @@ def the_window():
     def refresh_data():
         expressions = session.query(Expression.expression)
         combo['values'] = tuple(return_list(expressions))
+        combo.save_value()
         combo.event_generate("<<ComboboxSelected>>")
 
 
@@ -148,16 +150,22 @@ def the_window():
             InputWindow.input_window(login)
             
         def button_add_click():
-            newUser = User()
-            newUser.login_name = combo_user.get()
-            newUser.user_score = 0
-            date_time = datetime.datetime.now()
-            newUser.user_start = date_time
-            newUser.user_last_add = date_time
-            session.add(newUser)
-            session.commit()
-            user_names = session.query(User.login_name)
-            combo_user['values'] = tuple(user_names)
+            answer = mb.askyesno(title = "Уверены?",
+                                 message = f"Создать пользователя {combo_user.get()}?")
+            if answer == True:
+                newUser = User()
+                newUser.login_name = combo_user.get()
+                newUser.user_score = 0
+                date_time = datetime.datetime.now()
+                newUser.user_start = date_time
+                newUser.user_last_add = date_time
+                session.add(newUser)
+                session.commit()
+                user_names = session.query(User.login_name)
+                combo_user['values'] = tuple(user_names)
+                mb.showinfo("Ok!", f"Пользователь {combo_user.get()} создан!")
+            else:
+                mb.showinfo("Ok!", f"Пользователь {combo_user.get()} не создан!")
             
         login_window = Toplevel(window)
         login_window.title("Назовитесь!")
