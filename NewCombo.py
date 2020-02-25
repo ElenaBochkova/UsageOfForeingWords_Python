@@ -2,6 +2,9 @@ from tkinter.ttk import Combobox
 from tkinter import *
 
 class NewCombo(Combobox):
+    
+    expressions = ('')
+    
     def __return_list(self, expression):
         new_list = []
         for row in expression:
@@ -27,9 +30,6 @@ class NewCombo(Combobox):
             new_list = self.__return_list(new_list)
             self['values']=tuple(new_list)
 
-    def __init__(self, values):
-        super().__init__()
-        self.expressions = ('')
 
     def save_value(self):
         '''saves all current NewCombo['values'] to make choice from them in on_type

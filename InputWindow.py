@@ -381,18 +381,13 @@ def input_window(user_name):
         for row in subtitles:
             new_list.append(row[0])
         combo_subtitle['value'] = tuple(new_list)
+        combo_subtitle.save_value()
         entry_link.delete(1.0, END)
             
 
     def on_type_t(v):
-        """при печати в комбобоксе с переводом выбираются подходящие слова """ 
-        new_list = []
-        val = combo_t.get()
-        global translations
-        for line in translations:
-            if line[0].startswith(val):
-                new_list.append(line)
-        combo_t['values']=tuple(new_list)
+        """при печати в комбобоксе с переводом выбираются подходящие слова """
+        combo_t.on_type(v)
         keys = repr(v).split()
         if (keys[4] not in ["keycode=13", "keycode=39", "keycode=37"]):
             entr.delete(1.0, END)
@@ -400,13 +395,7 @@ def input_window(user_name):
 
     def on_type_subtitle(v):
         """при печати в комбобоксе с книгой выбираются подходящие слова """ 
-        new_list = []
-        val = combo_subtitle.get()
-        global subtitles
-        for line in subtitles:
-            if line[0].startswith(val):
-                new_list.append(line[0])
-        combo_subtitle['values']=tuple(new_list)
+        combo_subtitle.on_type(v)
         keys = repr(v).split()
         if (keys[4] not in ["keycode=13", "keycode=39", "keycode=37"]): 
             entry_link.delete(1.0, END)
@@ -416,21 +405,22 @@ def input_window(user_name):
 в соответствующий комбобокс после выбора значения в комбобоксе "Слово"
 
 также очищает все прочие значения"""
-
+        combo_t['values'] = ('','')
+        combo_t.current(0)
         expression_id = session.query(Expression.id).filter_by(
             expression = combo.get().lstrip("{").rstrip("}"))
         translation = session.query(Expr_Translation.translation).filter_by(
             expression = expression_id)
         new_list = return_list(translation)
         combo_t['values'] = tuple(new_list)
-        global translations
-        translations = new_list
+        combo_t.save_value()
 
 
     def clear_subtitles():
         combo_subtitle['values'] = ('','')
         combo_subtitle.current(0)
         combo_subtitle['values'] = ('')
+        combo_subtitle.save_value()
         global subtitles
         subtitles = []
         entry_link.delete(1.0, END)
@@ -457,8 +447,7 @@ def input_window(user_name):
     lbl = Label(window, text="Введите слово:")
     lbl.place(x = 30, y = 8)
     
-    combo = nc(window)
-    combo.width = 25
+    combo = nc(window, width = 25)
     combo.place(x = 20, y = 30)
 
     session = connect_to_base()
@@ -473,7 +462,7 @@ def input_window(user_name):
     lbl_t = Label(window, text = "Введите перевод слова:")
     lbl_t.place(x = 240, y = 8)
 
-    combo_t = Combobox(window, width = 25)
+    combo_t = nc(window, width = 25)
     combo_t.place(x = 230, y = 30)
     combo_t.bind("<KeyRelease>", on_type_t)    
 
@@ -505,8 +494,7 @@ def input_window(user_name):
     lbl_author = Label(window, text = "Автор:")
     lbl_author.place(x = 30, y = 188)
 
-    combo_author = nc(window)
-    combo_author.width = 25
+    combo_author = nc(window, width = 25)
     combo_author.place(x = 20, y = 210)
 
     global authors
@@ -522,8 +510,7 @@ def input_window(user_name):
     lbl_title = Label(window, text = "Книга:")
     lbl_title.place(x = 30, y = 238)
 
-    combo_title = nc(window)
-    combo_title.width = 25
+    combo_title = nc(window, width = 25)
     combo_title.place(x = 20, y = 260)
     combo_title.bind("<<ComboboxSelected>>", open_subtitle)
     combo_title.bind("<KeyRelease>", combo_title.on_type)
@@ -532,7 +519,7 @@ def input_window(user_name):
     lbl_subtitle = Label(window, text = "Глава:")
     lbl_subtitle.place(x = 220, y = 238)
 
-    combo_subtitle = Combobox(window, width = 30)
+    combo_subtitle = nc(window, width = 30)
     combo_subtitle.place(x = 210, y = 260)
     combo_subtitle.bind("<<ComboboxSelected>>", open_link)
     combo_subtitle.bind("<KeyRelease>", on_type_subtitle)
