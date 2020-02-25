@@ -34,6 +34,7 @@ def the_window():
         combo['values'] = tuple(return_list(expressions))
         combo.save_value()
         combo.event_generate("<<ComboboxSelected>>")
+        mb.showinfo("Ok!", f"Новые данные подтянуты в программу!")
 
 
     def select_usage(expr, trans):
@@ -163,9 +164,11 @@ def the_window():
                 session.commit()
                 user_names = session.query(User.login_name)
                 combo_user['values'] = tuple(user_names)
-                mb.showinfo("Ok!", f"Пользователь {combo_user.get()} создан!")
+                mb.showinfo("Ok!",
+                            f"Пользователь {combo_user.get()} создан!")
             else:
-                mb.showinfo("Ok!", f"Пользователь {combo_user.get()} не создан!")
+                mb.showinfo("Ok!",
+                            f"Пользователь {combo_user.get()} не создан!")
             
         login_window = Toplevel(window)
         login_window.title("Назовитесь!")
@@ -201,6 +204,15 @@ def the_window():
     window = Tk()
     window.title("Помощник в изучении слов")
     window.geometry('430x420')
+    mainmenu = Menu(window)
+    window.config(menu = mainmenu)
+
+    datamenu = Menu(mainmenu, tearoff = 0)
+    datamenu.add_command(label = "Добавить", command = lambda:
+                           ask_input())
+    datamenu.add_command(label = "Обновить", command = lambda:
+                         refresh_data())
+    mainmenu.add_cascade(label = "Данные", menu = datamenu)
     create_database()
     session = connect_to_base()
     lbl = Label(window, text="Это слово:")
@@ -272,13 +284,15 @@ def the_window():
                  clicked_link())
     btn_link.place(x = 160, y = 298)
 
-    btn_ask_input = Button(window, text = "Новые данные", command = lambda:
-                           ask_input())
-    btn_ask_input.place(x = 260, y = 57)
+#    btn_ask_input = Button(window, text = "Новые данные", command = lambda:
+#                           ask_input())
+#    btn_ask_input.place(x = 260, y = 57)
 
-    btn_refresh = Button(window, text = "Обновить данные", command = lambda:
-                         refresh_data())
-    btn_refresh.place(x = 270, y = 17)
+#    btn_refresh = Button(window, text = "Обновить данные", command = lambda:
+#                         refresh_data())
+#    btn_refresh.place(x = 270, y = 17)
+
+  
 
     window.mainloop()
 
