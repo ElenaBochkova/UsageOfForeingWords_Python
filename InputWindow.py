@@ -2,6 +2,7 @@ from DatabaseControl import *
 from tkinter import *
 from tkinter.ttk import Combobox
 import datetime
+from NewCombo import NewCombo as nc
 
 combo_list = []
 translations = []
@@ -383,23 +384,6 @@ def input_window(user_name):
         entry_link.delete(1.0, END)
             
 
-    def on_type(v):
-        """при печати в комбобоксе со словом выбираются подходящие слова """
-        new_list = []
-        val = combo.get()
-        for line in expressions:
-            if line[0].startswith(val):
-                new_list.append(line)
-        combo['values']=tuple(new_list)
-        keys = repr(v).split()
-        if (keys[4] not in ["keycode=13", "keycode=39", "keycode=37"]):
-            combo_t['values'] = ('','')
-            combo_t.current(0)
-            combo_t['values'] = ('')
-            global translations
-            translations = []
-            entr.delete(1.0, END)
-
     def on_type_t(v):
         """при печати в комбобоксе с переводом выбираются подходящие слова """ 
         new_list = []
@@ -413,43 +397,6 @@ def input_window(user_name):
         if (keys[4] not in ["keycode=13", "keycode=39", "keycode=37"]):
             entr.delete(1.0, END)
 
-    def on_type_a(v):
-        """при печати в комбобоксе с автором выбираются подходящие слова """ 
-        new_list = []
-        val = combo_author.get()
-        global authors
-        for line in authors:
-            if line[0].startswith(val):
-                new_list.append(line)
-        combo_author['values']=tuple(new_list)
-        clear_subtitles()
-        combo_title['values'] = ('','')
-        combo_title.current(0)
-        combo_title['values'] = ('')
-        global titles
-        titles = []
-        entry_link.delete(1.0, END)
-        keys = repr(v).split()
-        if keys[4] == "keycode=13":
-            combo_author.event_generate("<<ComboboxSelected>>")
-
-    def on_type_title(v):
-        """при печати в комбобоксе с книгой выбираются подходящие слова """ 
-        new_list = []
-        val = combo_title.get()
-        global titles
-        for line in titles:
-            if line[0].startswith(val):
-                new_list.append(line[0])
-        combo_title['values']=tuple(new_list)
-        entry_link.delete(1.0, END)
-        clear_subtitles()
-        keys = repr(v).split()
-        if keys[4] == "keycode=13":
-            for line in titles:
-                if (combo_title.get() in line):
-                    open_subtitle(keys[4])
-                    break
 
     def on_type_subtitle(v):
         """при печати в комбобоксе с книгой выбираются подходящие слова """ 
@@ -499,6 +446,7 @@ def input_window(user_name):
         titles = session.query(Title.title).filter_by(
             author = id_author.id)
         combo_title['values'] = tuple(return_list(titles))
+        combo_title.save_value()
         clear_subtitles()     
 
     
@@ -509,14 +457,16 @@ def input_window(user_name):
     lbl = Label(window, text="Введите слово:")
     lbl.place(x = 30, y = 8)
     
-    combo = Combobox(window, width = 25)
+    combo = nc(window)
+    combo.width = 25
     combo.place(x = 20, y = 30)
 
     session = connect_to_base()
     expressions = session.query(Expression.expression)
     combo['values'] = tuple(return_list(expressions))
+    combo.save_value()
 
-    combo.bind("<KeyRelease>", on_type)
+    combo.bind("<KeyRelease>", combo.on_type)
     combo.bind("<<ComboboxSelected>>", open_translate)
  
 
@@ -555,25 +505,28 @@ def input_window(user_name):
     lbl_author = Label(window, text = "Автор:")
     lbl_author.place(x = 30, y = 188)
 
-    combo_author = Combobox(window, width = 25)
+    combo_author = nc(window)
+    combo_author.width = 25
     combo_author.place(x = 20, y = 210)
 
     global authors
     authors = session.query(Author.author)
     combo_author['values'] = tuple(return_list(authors))
+    combo_author.save_value()
     
     combo_author.bind("<<ComboboxSelected>>", open_books)
-    combo_author.bind("<KeyRelease>", on_type_a)
+    combo_author.bind("<KeyRelease>", combo_author.on_type)
     
 
 
     lbl_title = Label(window, text = "Книга:")
     lbl_title.place(x = 30, y = 238)
 
-    combo_title = Combobox(window, width = 25)
+    combo_title = nc(window)
+    combo_title.width = 25
     combo_title.place(x = 20, y = 260)
     combo_title.bind("<<ComboboxSelected>>", open_subtitle)
-    combo_title.bind("<KeyRelease>", on_type_title)
+    combo_title.bind("<KeyRelease>", combo_title.on_type)
 
 
     lbl_subtitle = Label(window, text = "Глава:")
