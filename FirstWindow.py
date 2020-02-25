@@ -5,6 +5,7 @@ from tkinter.ttk import Combobox
 import webbrowser
 import InputWindow
 import datetime
+from NewCombo import NewCombo as nc
 
 def clicked(the_word):
     play_the_word.play(the_word)
@@ -50,26 +51,6 @@ def the_window():
         link_to_source = ''
         text.delete('1.0', END)    
 
-    def on_type(v):
-        """при печати в комбобоксе со словом выбираются подходящие слова """ 
-        new_list = []
-        val = combo.get().lstrip("{").rstrip("}")
-        keys = repr(v).split()
-        for line in expressions:
-            if line[0].startswith(val):
-                new_list.append(line[0])
-        combo['values']=tuple(new_list)
-        keys = repr(v).split()
-        if (keys[4] not in ["keycode=13", "keycode=39", "keycode=37"]): 
-            combo_t['values'] = ('','')
-            combo_t.current(0)
-            combo_t['values'] = ('')
-            global translations
-            translations = []
-            clear_all()
-        if keys[4] == "keycode=13":
-            open_translate(keys[4])
-
     def open_translate(v):
         """ процедура вставляет варианты перевода выбранного слова
 в соответствующий комбобокс после выбора значения в комбобоксе "Слово"
@@ -83,8 +64,7 @@ def the_window():
             expression = expression_id)
         new_list = return_list(translation)
         combo_t['values'] = tuple(new_list)
-        global translations
-        translations = new_list
+        combo_t.save_value()
 
 
     def on_select_translate(vl):
@@ -217,13 +197,15 @@ def the_window():
     session = connect_to_base()
     lbl = Label(window, text="Это слово:")
     lbl.place(x = 10, y = 8)
-    combo = Combobox(window)
+    combo = nc(window)
     combo.place(x = 5, y = 30)
 
     expressions = session.query(Expression.expression)
-    combo['values'] = tuple(return_list(expressions))    
+    combo['values'] = tuple(return_list(expressions))
+    combo.save_value()
+    
 
-    combo.bind("<KeyRelease>", on_type)
+    combo.bind("<KeyRelease>", combo.on_type)
     combo.bind("<<ComboboxSelected>>", open_translate)
     
     lbl_t = Label(window, text = "Перевод:")
@@ -231,9 +213,10 @@ def the_window():
     lbl_u = Label(window, text = "Примеры использования:")
     lbl_u.place(x = 10, y = 108)
 
-    combo_t = Combobox(window)
+    combo_t = nc(window)
     combo_t.place(x = 5, y = 80)
     combo_t.bind("<<ComboboxSelected>>", on_select_translate)
+    combo_t.bind("<KeyRelease>", combo_t.on_type)
     
 
     
