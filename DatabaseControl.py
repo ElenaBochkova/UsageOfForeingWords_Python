@@ -182,7 +182,14 @@ def connect_to_base():
     Session = sessionmaker(bind = engine)
     session = Session()
     return session
-    
+
+def connect_to_new_base(file_name):
+    dbPath = file_name
+    engine = create_engine('sqlite:///%s' % dbPath)
+    Session = sessionmaker(bind = engine)
+    session = Session()
+    return session
+
 if __name__ == '__main__':
     create_database()
     

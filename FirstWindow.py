@@ -3,10 +3,12 @@ import play_the_word
 from tkinter import *
 from tkinter.ttk import Combobox
 from tkinter import messagebox as mb
+from tkinter import filedialog as fd
 import webbrowser
 import InputWindow
 import datetime
 from NewCombo import NewCombo as nc
+from ImportData import ImportForeignData as IFD
 
 def clicked(the_word):
     play_the_word.play(the_word)
@@ -22,6 +24,15 @@ link_to_source = ''
 
 def the_window():
 
+    def open_new_datafile():
+        file_name = fd.askopenfilename(filetypes = (("Database files", "*.db"),
+                                                   ("All files", "*.*")))
+        print(file_name)
+        new_session = connect_to_new_base(file_name)
+        imp = IFD(session, new_session)
+        imp.find_expr_diff()
+
+        
     # Ниже workaround для исключения {} у многословных выражений
     def return_list(expression):
         new_list = []
@@ -212,6 +223,8 @@ def the_window():
                            ask_input())
     datamenu.add_command(label = "Обновить", command = lambda:
                          refresh_data())
+    datamenu.add_command(label = "Импорт", command = lambda:
+                         open_new_datafile())
     mainmenu.add_cascade(label = "Данные", menu = datamenu)
     create_database()
     session = connect_to_base()
