@@ -1,6 +1,7 @@
 from DatabaseControl import *
 from tkinter import *
 from tkinter.ttk import Combobox
+from tkinter import messagebox as mb
 import datetime
 from NewCombo import NewCombo as nc
 
@@ -9,6 +10,7 @@ translations = []
 authors = []
 titles = []
 subtitles = []
+info = ''
 
 def input_window(user_name):
 
@@ -29,7 +31,8 @@ def input_window(user_name):
 
     def insert_a_word(a_word):
         """вставляет новое слово без перевода и использования"""
-        print("вставляем новое слово "+ a_word)
+        global info
+        info = info + "Вставляем новое слово "+ a_word + "\n"
         new_word = Expression()
         new_word.expression = a_word
         session.add(new_word)
@@ -37,7 +40,9 @@ def input_window(user_name):
 
     def insert_a_translation(a_word, a_trans):
         """вставляет новый перевод заданному слову"""
-        print("вставляем новый перевод " + a_trans + " к слову " + a_word)
+        global info
+        info = info + "Вставляем новый перевод " + a_trans
+        info = info + " к слову " + a_word + "\n"
         new_trans = Expr_Translation()
         id_word = session.query(Expression).filter_by(
             expression = a_word).first()
@@ -56,11 +61,12 @@ def input_window(user_name):
     def insert_a_source(an_author, a_title, a_subtitle, a_link):
         """вставляет новый источник использования"""
         a_new_source = False
-        print("вставляем новый источник:")
-        print("автор: " + an_author)
-        print("книга: " + a_title)
-        print("глава: " + a_subtitle)
-        print("ссылка: " + a_link + "!")
+        global info
+        info = info + "Вставляем новый источник:\n" 
+        info = info + "\tавтор: " + an_author + "\n"
+        info = info + "\tкнига: " + a_title + "\n"
+        info = info + "\tглава: " + a_subtitle + "\n"
+        info = info + "\tссылка: " + a_link + "\n"
         #если автор новый, добавляем его в базу
         id_author = session.query(Author.id).filter_by(
             author = an_author).first()
@@ -102,8 +108,9 @@ def input_window(user_name):
 
     def correct_a_source_link(subtitle_id, a_link):
         """изменяет ссылку на источник"""
-        print("изменяем ссылку " + repr(subtitle_id) + " на "+
-              a_link.rstrip('\n') + "!")
+        global info
+        info = info + "Изменяем ссылку " + repr(subtitle_id) + " на "
+        info = info + a_link.rstrip('\n') + "\n"
         link = session.query(Subtitle).filter_by(
             id = subtitle_id).first()
         link.link = a_link
@@ -113,10 +120,11 @@ def input_window(user_name):
     def insert_an_usage(a_word, a_trans, a_usage, a_user,
                         an_author, a_title, a_subtitle):
         """вставляет новый вариант использования"""
-        print("вставляем новый вариант использования")
-        print(a_usage)
-        print("для слова " + a_word + " с переводом " + a_trans)
-        print("пользователь " + a_user)
+        global info
+        info = info + "Вставляем новый вариант использования\n"
+        info = info + a_usage + "\n"
+        info = info + "для слова " + a_word + " с переводом " + a_trans + "\n"
+        info = info + "пользователь " + a_user + "\n"
         id_author = session.query(Author.id).filter_by(
             author = an_author).first()
         id_title = session.query(Title.id).filter_by(
@@ -247,12 +255,6 @@ def input_window(user_name):
                     changing_the_link = True
                 else:
                     the_old_link = True
-        print(f"the_source_is_known {the_source_is_known}")
-        print(f"changing_the_link, {changing_the_link}")
-        print(f"a_new_author, {a_new_author}")
-        print(f"a_new_title, {a_new_title}")
-        print(f"a_new_subtitle, {a_new_subtitle}")
-
                 
         a_new_link = False
         no_link = False
@@ -333,10 +335,12 @@ def input_window(user_name):
             messages.append("  Недостаточно данных:")
             messages.append("   - не введено ничего!")
 
+        global info
+        info = ''
         if messages!=[]:
             error_message(messages)
         else:
-            print("А теперь будем вставлять данные!")
+            #print("А теперь будем вставлять данные!")
             if a_new_word:
                 insert_a_word(combo.get().lstrip("{").rstrip("}"))
             if a_new_translation:
@@ -360,6 +364,7 @@ def input_window(user_name):
                                 combo_subtitle.get()
                                 )
             refresh_data()
+            mb.showinfo("Ok!", info)
 
     def open_link(v):
         """процедура вставляет книги автора в соответствующий комбобокс после выбора автора"""
