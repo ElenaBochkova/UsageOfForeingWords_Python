@@ -14,6 +14,52 @@ info = ''
 
 def input_window(user_name):
 
+    def add_language():
+        def button_ok_click():
+            answer = mb.askyesno(title = "Уверены?",
+                                 message = f"Создать язык {combo_language.get()}?")
+            if answer == True:
+                newlang = Language()
+                newlang.language = combo_language.get()
+                session.add(newlang)
+                session.commit()
+                mb.showinfo("Ok!",
+                            f"Язык {combo_language.get()} добавлен!")
+                languages = session.query(Language.language)
+                combo_l_source['values'] = tuple(languages)
+                combo_l_source.current(0)
+                combo_l_trans['values'] = tuple(languages)
+                combo_l_trans.current(1)
+                add_l_window.destroy()
+            else:
+                mb.showinfo("Ok!",
+                            f"Язык {combo_language.get()} не добавлен!")
+                add_l_window.destroy()
+        
+        add_l_window = Toplevel(window)
+        add_l_window.title("Новый язык!")
+        add_l_window.geometry('240x125')
+
+        lbl_language = Label(add_l_window, text = "Язык:", fg = "#473773",
+                         font = "Arial 11")
+        lbl_language.place(x = 10, y = 11)
+
+        combo_language = nc(add_l_window)
+        combo_language.place(x = 50, y = 39)
+        session = connect_to_base()
+        languages = session.query(Language.language)
+        combo_language['values'] = tuple(return_list(languages))
+        combo_language.save_value()
+        combo_language.bind("<KeyRelease>", combo_language.on_type)
+        
+        button_ok = Button(add_l_window, text = "Добавить!", fg = "#473773",
+                           font = "Arial 11",
+                           command=lambda: button_ok_click())
+        button_ok.place(x = 118, y = 76)
+
+
+
+        
     def return_list(expression):
         new_list = []
         for row in expression:
@@ -448,6 +494,11 @@ def input_window(user_name):
     window = Tk()
     window.geometry('430x430')
     window.title("Запись данных")
+
+    mainmenu = Menu(window)
+    window.config(menu = mainmenu)
+    mainmenu.add_command(label = "Добавить язык", command = lambda:
+                         add_language())
 
     lbl = Label(window, text="Введите слово:")
     lbl.place(x = 30, y = 8)
