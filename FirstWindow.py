@@ -31,6 +31,7 @@ def the_window():
         new_session = connect_to_new_base(file_name)
         imp = IFD(session, new_session)
         imp.find_expr_diff()
+        imp.fill_expr_diff()
 
         
     # Ниже workaround для исключения {} у многословных выражений
