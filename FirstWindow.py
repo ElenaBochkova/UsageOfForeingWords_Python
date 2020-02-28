@@ -32,6 +32,8 @@ def the_window():
         imp = IFD(session, new_session)
         imp.find_expr_diff()
         imp.fill_expr_diff()
+        imp.fill_expr()
+        refresh_data()
 
         
     # Ниже workaround для исключения {} у многословных выражений
