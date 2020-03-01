@@ -4,6 +4,10 @@ from tkinter import *
 class NewCombo(Combobox):
     
     expressions = ('')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bind("<KeyRelease>", self.on_type)
     
     def __return_list(self, expression):
         new_list = []
@@ -44,5 +48,5 @@ if __name__ == '__main__':
     combo.place(x = 5, y = 20)
     combo['values'] = ("Шаринган", "Чакра", "Ци", "Человек")
     combo.save_value()
-    combo.bind("<KeyRelease>", combo.on_type)
+    #combo.bind("<KeyRelease>", combo.on_type)
     mainloop()

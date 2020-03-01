@@ -241,7 +241,6 @@ def the_window():
     combo.save_value()
     
 
-    combo.bind("<KeyRelease>", combo.on_type)
     combo.bind("<<ComboboxSelected>>", open_translate)
     
     lbl_t = Label(window, text = "Перевод:")
@@ -252,7 +251,6 @@ def the_window():
     combo_t = nc(window)
     combo_t.place(x = 5, y = 80)
     combo_t.bind("<<ComboboxSelected>>", on_select_translate)
-    combo_t.bind("<KeyRelease>", combo_t.on_type)
     
 
     

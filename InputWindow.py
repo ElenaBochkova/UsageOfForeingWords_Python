@@ -511,7 +511,6 @@ def input_window(user_name):
     combo['values'] = tuple(return_list(expressions))
     combo.save_value()
 
-    combo.bind("<KeyRelease>", combo.on_type)
     combo.bind("<<ComboboxSelected>>", open_translate)
  
 
@@ -558,9 +557,7 @@ def input_window(user_name):
     combo_author['values'] = tuple(return_list(authors))
     combo_author.save_value()
     
-    combo_author.bind("<<ComboboxSelected>>", open_books)
-    combo_author.bind("<KeyRelease>", combo_author.on_type)
-    
+    combo_author.bind("<<ComboboxSelected>>", open_books) 
 
 
     lbl_title = Label(window, text = "Книга:")
@@ -569,8 +566,6 @@ def input_window(user_name):
     combo_title = nc(window, width = 25)
     combo_title.place(x = 20, y = 260)
     combo_title.bind("<<ComboboxSelected>>", open_subtitle)
-    combo_title.bind("<KeyRelease>", combo_title.on_type)
-
 
     lbl_subtitle = Label(window, text = "Глава:")
     lbl_subtitle.place(x = 220, y = 238)
