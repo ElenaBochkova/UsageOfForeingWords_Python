@@ -9,6 +9,7 @@ import InputWindow
 import datetime
 from NewCombo import NewCombo as nc
 from ImportData import ImportForeignData as IFD
+import Statistics
 
 def clicked(the_word):
     play_the_word.play(the_word)
@@ -21,8 +22,17 @@ subtitles = []
 
 link_to_source = ''
 
+    # Ниже workaround для исключения {} у многословных выражений
+def return_list(expression):
+    new_list = []
+    for row in expression:
+        new_list.append(row[0])
+    return new_list
 
 def the_window():
+
+    def ask_statistics():
+        Statistics.the_window()
 
     def open_new_datafile():
         file_name = fd.askopenfilename(filetypes = (("Database files", "*.db"),
@@ -36,13 +46,6 @@ def the_window():
         refresh_data()
 
         
-    # Ниже workaround для исключения {} у многословных выражений
-    def return_list(expression):
-        new_list = []
-        for row in expression:
-            new_list.append(row[0])
-        return new_list
-
     def refresh_data():
         expressions = session.query(Expression.expression)
         combo['values'] = tuple(return_list(expressions))
@@ -228,6 +231,8 @@ def the_window():
                          refresh_data())
     datamenu.add_command(label = "Импорт", command = lambda:
                          open_new_datafile())
+    datamenu.add_command(label = "Статистика", command = lambda:
+                         ask_statistics())
     mainmenu.add_cascade(label = "Данные", menu = datamenu)
     create_database()
     session = connect_to_base()

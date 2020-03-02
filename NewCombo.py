@@ -36,7 +36,8 @@ class NewCombo(Combobox):
 
 
     def save_value(self):
-        '''saves all current NewCombo['values'] to make choice from them in on_type
+        '''saves all current NewCombo['values'] to make choice from them in
+on_type
 '''
         self.expressions = self['values']
         
@@ -48,5 +49,4 @@ if __name__ == '__main__':
     combo.place(x = 5, y = 20)
     combo['values'] = ("Шаринган", "Чакра", "Ци", "Человек")
     combo.save_value()
-    #combo.bind("<KeyRelease>", combo.on_type)
     mainloop()
