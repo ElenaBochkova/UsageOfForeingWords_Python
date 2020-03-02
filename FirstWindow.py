@@ -5,8 +5,9 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox as mb
 from tkinter import filedialog as fd
 import webbrowser
-import InputWindow
 import datetime
+import json
+import InputWindow
 from NewCombo import NewCombo as nc
 from ImportData import ImportForeignData as IFD
 import Statistics
@@ -37,7 +38,6 @@ def the_window():
     def open_new_datafile():
         file_name = fd.askopenfilename(filetypes = (("Database files", "*.db"),
                                                    ("All files", "*.*")))
-        print(file_name)
         new_session = connect_to_new_base(file_name)
         imp = IFD(session, new_session)
         imp.find_expr_diff()
@@ -77,6 +77,8 @@ def the_window():
 
 также очищает все прочие значения"""
         clear_all()
+        combo_t['values'] = ('',)
+        combo_t.current(0)
         
         expression_id = session.query(Expression.id).filter_by(
             expression = combo.get().lstrip("{").rstrip("}"))
@@ -116,7 +118,7 @@ def the_window():
                 numb_pr = numb_pr+1
                 for a in lines:
                     k = k + len(a) + 1
-                    if k > 50:
+                    if k > 55:
                         text.insert(j, ins+"\n")
                         k = len(a)+1
                         ins = a + " "
@@ -146,9 +148,9 @@ def the_window():
                     source_id = line.usage_source
                     ids = session.query(Source).filter_by(
                         id = source_id).first()
-                    author = session.query(Author.author).filter_by(
+                    author = session.query(Author).filter_by(
                         id = ids.author).first()
-                    title = session.query(Title.title).filter_by(
+                    title = session.query(Title).filter_by(
                         id = ids.title).first()
                     subtitle = session.query(Subtitle).filter_by(
                         id = ids.subtitle).first()
@@ -164,8 +166,10 @@ def the_window():
     def ask_input():
         def button_click():
             login = combo_user.get()
+            with open("your_login.json", 'w') as f: 
+                json.dump(login, f) #сохраняем выбранного юзера в файл
             login_window.destroy()
-            InputWindow.input_window(login)
+            InputWindow.input_window(login) 
             
         def button_add_click():
             answer = mb.askyesno(title = "Уверены?",
@@ -198,11 +202,26 @@ def the_window():
         
         combo_user = Combobox(login_window)
         combo_user.place (x = 50, y = 39)
-        session = connect_to_base()
+        login = ''
+        try:
+            with open("your_login.json", 'r') as f:
+                login = json.load(f)
+        except:
+            pass        
         user_names = session.query(User.login_name)
-        combo_user['values'] = tuple(user_names)
-        if tuple(user_names) !=(('',),):
+        user_logins = tuple(return_list(user_names))
+        combo_user['values'] = user_logins
+        k = 0
+        for name in user_logins: #ищем пользователя, сохраненного в файле
+            if (name == login):
+                combo_user.current(k) #выбираем найденного пользователя
+                login = '0' #если нашли, отмечаем это так
+                break
+            else:
+                k = k +1
+        if login != '0': #если не нашли юзера из файла, берем первого
             combo_user.current(0)
+                
         button_ok = Button(login_window, text = "Приступить!", fg = "#473773",
                            font = "Arial 11", command=lambda: button_click())
         button_ok.place(x = 118, y = 76)
@@ -220,7 +239,7 @@ def the_window():
 
     window = Tk()
     window.title("Помощник в изучении слов")
-    window.geometry('430x420')
+    window.geometry('460x420')
     mainmenu = Menu(window)
     window.config(menu = mainmenu)
 
@@ -269,7 +288,7 @@ def the_window():
     btn_u.place(x = 153, y = 77)
 
     text = Text()
-    text['width'] = 50
+    text['width'] = 55
     text['height'] = 10
     text.place(x = 5, y = 130)
 

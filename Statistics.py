@@ -3,12 +3,10 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox as mb
 from tkinter import filedialog as fd
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import csv
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-import matplotlib.ticker as ticker
 import datetime
 from NewCombo import NewCombo as nc
 from DatabaseControl import *
