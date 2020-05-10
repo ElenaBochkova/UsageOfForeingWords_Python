@@ -1,26 +1,19 @@
-""" находит слово в гугл переводчике и проигрывает его звук"""
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
-import time
+""" проигрывает слово при помощи спец утилиты"""
+from gtts import gTTS
+from playsound import playsound
+import os
+from datetime import *
 
-def play(word_name):
-    if word_name == "":
-        word_name = "empty space"
-    opts = Options()
-    opts.headless = True
-    browser = Firefox(options=opts)
-    word_path = 'https://translate.google.com/#auto/ru/' + word_name
-    browser.get(word_path)
-    browser.find_element_by_xpath("//div[3]/div[2]/div").click()
-    time.sleep(1)
-    browser.quit();
+
+def play(word_name, language):
+    myobj = gTTS(text = word_name, lang = language, slow = False)
+    d = datetime.now()
+    string = str(d.strftime("(%d)(%m)(%Y)(%H)(%M)(%S)"))
+    path = f"{string}.mp3"
+    myobj.save(path)
+    playsound(path)
+    os.remove(path)
+
 
 if __name__ == '__main__':
-    import sys
-    params = sys.argv[1:]
-    if len(params)==0:
-        word_name = "empty space"
-    else:
-        word_name = params[0]
-    play(word_name)
-    
+    play("empty space", "en")
